@@ -1,28 +1,37 @@
-import Vue from 'vue'
-import VueRouter from 'vue-router'
-import HelloWorld from '@/components/HelloWorld'
-import Index from '../views/index/index' // 导入我们编写的vue组件
+import Vue from 'vue';
+import Router from 'vue-router';
+import login from '@/components/login';
 
-Vue.use(VueRouter)
+Vue.use(Router);
 
-const routes = [
-    {
-        path: '/',
-        name: 'HelloWorld',
-        component: HelloWorld
-    },
-    // 配置路由地址
-    {
-        path: '/index',
-        name: 'Index',
-        component: Index
+const router = new Router({
+    routes: [
+        {
+            path: '/',
+            redirect: '/login'
+        },
+        {
+            path: '/login',
+            name: 'login',
+            component: login
+        }
+    ]
+});
+
+// 导航守卫
+// 使用 router.beforeEach 注册一个全局前置守卫，判断用户是否登陆
+router.beforeEach((to, from, next) => {
+    if (to.path === '/login') {
+        next();
+    } else {
+        let token = localStorage.getItem('Authorization');
+
+        if (token === 'null' || token === '') {
+            next('/login');
+        } else {
+            next();
+        }
     }
-]
+});
 
-const router = new VueRouter({
-    mode: 'history',
-    base: process.env.BASE_URL,
-    routes
-})
-
-export default router
+export default router;
