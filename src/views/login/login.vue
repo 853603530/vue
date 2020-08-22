@@ -25,21 +25,15 @@
                 if (this.loginForm.username === '' || this.loginForm.password === '') {
                     alert('账号或密码不能为空');
                 } else {
-                    this.axios({
-                        method: 'post',
-                        url: '/user/login',
-                        data: _this.loginForm
-                    }).then(res => {
-                        console.log(res.data);
-                        _this.userToken = 'Bearer ' + res.data.data.body.token;
-                        // 将用户token保存到vuex中
-                        _this.changeLogin({ Authorization: _this.userToken });
-                        _this.$router.push('/home');
-                        alert('登陆成功');
-                    }).catch(error => {
-                        alert('账号或密码错误');
-                        console.log(error);
-                    });
+                    this.$api.abc.abc(
+                        _this.loginForm.username,_this.loginForm.password
+                    ).then((response)=>{
+                        this.$Message.success(response.data.msg);
+                        localStorage.setItem('TOKEN', JSON.stringify(response.data.results.TOKEN)); // 设置TOKEN
+                        this.$router.push("/") // 跳转到首页
+                    }).catch((error)=>{
+                        this.$Message.error(error.response.data.msg);
+                    })
                 }
             }
         }
