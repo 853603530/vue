@@ -23,43 +23,84 @@
                 </el-button-group>
             </div>
         </el-header>
-        <el-main>
-            <template v-for="obj in arrays">
-                <el-row :gutter="20" :key="obj.id">
-                    <el-col :span="5"><div class="grid-content bg-purple"></div></el-col>
-                    <el-col :span="12">
-                        <div style="margin-bottom: 20px;float: left;width: 100%" class="js-box">
-                            <div style="float: left;width: 50%">
-                                <h2>{{obj.title}}</h2>
-                                <p>
-                                    {{obj.description}}
-                                </p>
-                                <a @click="upage(obj.userid)" tarrget="_blank" style="cursor:pointer"><i class="el-icon-user-solid"></i><span>{{obj.username}}</span></a>
-                                <a><span> | 发布时间:</span><span>{{obj.createTime}}</span></a>
-                            </div>
-                            <div style="margin-top: 20px;margin-left: 150px;float: left">
-                                <a>订阅：</a>
-                                <el-switch
-                                        v-model="obj.subscribe"
-                                        :active-value="1" :inactive-value="0"
-                                        active-color="#13ce66"
-                                        inactive-color="rgb(192 196 204)">
-                                </el-switch>
-                            </div>
-                            <div style="margin-top: 60px;margin-left: 150px;float: left" v-if="obj.subscribe===1">
-                                <a>启用：</a>
-                                <el-switch
-                                        v-model="obj.status"
-                                        :active-value="1" :inactive-value="0"
-                                        active-color="#13ce66"
-                                        inactive-color="rgb(192 196 204)">
-                                </el-switch>
-                            </div>
+        <el-container>
+            <el-aside>
+                <el-row>
+                    <el-col :span="24">
+                        <div style="float: left">
+                            <el-avatar :size="60" style="margin-top: 20px;margin-left: 20px"> 开发者 </el-avatar>
+                        </div>
+                        <div style="margin-top: 30px;margin-left: 100px">
+                            <span>{{developer_username}}</span>
+                        </div>
+                        <div style="margin-top: 10px;margin-left: 100px">
+                            <span style="font-size:12px">入驻时间：{{inserttime}}</span>
                         </div>
                     </el-col>
                 </el-row>
-            </template>
-        </el-main>
+                <el-row>
+                    <el-col :span="12">
+                        <div style="margin-left: 30px;text-align:center">
+                            <span style="font-size:14px">{{box_count}}</span>
+                        </div>
+                    </el-col>
+                    <el-col :span="6">
+                        <div style="margin-left: 30px;text-align:center">
+                            <span style="font-size:14px">{{subscribe_count}}</span>
+                        </div>
+                    </el-col>
+                </el-row>
+                <el-row>
+                    <el-col :span="12">
+                        <div style="margin-left: 30px;text-align:center">
+                            <span style="font-size:12px">工具</span>
+                        </div>
+                    </el-col>
+                    <el-col :span="6">
+                        <div style="margin-left: 30px;text-align:center">
+                            <span style="font-size:12px">订阅</span>
+                        </div>
+                    </el-col>
+                </el-row>
+            </el-aside>
+            <el-main>
+                <template v-for="obj in arrays">
+                    <el-row :gutter="20" :key="obj.id">
+                        <el-col :span="2"><div class="grid-content bg-purple"></div></el-col>
+                        <el-col :span="13">
+                            <div style="margin-bottom: 20px;float: left;width: 100%" class="js-box">
+                                <div style="float: left;width: 50%">
+                                    <h2>{{obj.title}}</h2>
+                                    <p>
+                                        {{obj.description}}
+                                    </p>
+                                    <a @click="upage(obj.userid)" tarrget="_blank" style="cursor:pointer"><i class="el-icon-user-solid"></i><span>{{obj.username}}</span></a>
+                                    <a><span> | 发布时间:</span><span>{{obj.createTime}}</span></a>
+                                </div>
+                                <div style="margin-top: 20px;margin-left: 150px;float: left">
+                                    <a>订阅：</a>
+                                    <el-switch
+                                            v-model="obj.subscribe"
+                                            :active-value="1" :inactive-value="0"
+                                            active-color="#13ce66"
+                                            inactive-color="rgb(192 196 204)">
+                                    </el-switch>
+                                </div>
+                                <div style="margin-top: 60px;margin-left: 150px;float: left" v-if="obj.subscribe===1">
+                                    <a>启用：</a>
+                                    <el-switch
+                                            v-model="obj.status"
+                                            :active-value="1" :inactive-value="0"
+                                            active-color="#13ce66"
+                                            inactive-color="rgb(192 196 204)">
+                                    </el-switch>
+                                </div>
+                            </div>
+                        </el-col>
+                    </el-row>
+                </template>
+            </el-main>
+        </el-container>
         <el-footer>
             <el-pagination
                     background
@@ -82,6 +123,10 @@
                 cur_page:1,
                 arrays:[],
                 total: 0,
+                developer_username:'',
+                inserttime:'',
+                box_count:'',
+                subscribe_count:'',
                 userlevel:1,
             };
         },
@@ -94,34 +139,46 @@
                 }else{
                     this.showRegisterLogin=true;
                 }
-                this.$api.service.subscribe_box(
-                    this.cur_page,
-                    10,
-                ).then((response)=>{
+                this.$api.service.developer_box(this.$route.params.userid,response.data.data.userid,this.cur_page,10).then((response)=>{
                     if(response.data.status==1){
                         this.arrays=response.data.data;
                     }
                 }).catch((error)=>{
+                    this.showRegisterLogin=true;
                     this.$message({
                         message: error,
                         type: 'warning'
                     });
                 })
+            }).catch(()=>{
+                this.$api.service.developer_box(this.$route.params.userid,null,this.cur_page,10).then((response)=>{
+                    if(response.data.status==1){
+                        this.arrays=response.data.data;
+                    }
+                }).catch((error)=>{
+                    this.showRegisterLogin=true;
+                    this.$message({
+                        message: error,
+                        type: 'warning'
+                    });
+                })
+            })
+            this.$api.service.developer_info(this.$route.params.userid).then(response=>{
+                this.developer_username=response.data.data.username
+                this.inserttime=response.data.data.inserttime
+                this.box_count=response.data.data.box_count
+                this.subscribe_count=response.data.data.subscribe_count
             }).catch((error)=>{
-                this.showRegisterLogin=true;
-                this.$message({
-                    message: error,
-                    type: 'warning'
-                });
+                console.log(error)
             })
         },
         methods: {
-            upage(userid){
-                this.$router.push('/upage/'+userid) // 跳转到搜索页面
-            },
             handleCurrentChange(val){
                 this.cur_page=val;
                 this.search ()
+            },
+            upage(userid){
+                this.$router.push('/upage/'+userid) // 跳转到搜索页面
             },
             search () {
                 if(this.keyword!=''){
@@ -175,6 +232,13 @@
 <style scoped>
     .el-footer{
         margin: auto;
+    }
+    .el-aside{
+        width: 240px;
+        height: 200px;
+        margin-top: 20px;
+        border: 2px solid white;
+        box-shadow: 0 0 25px #909399;
     }
     .el-main{
         margin-top: 20px;

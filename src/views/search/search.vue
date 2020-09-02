@@ -86,6 +86,7 @@
             };
         },
         mounted() {
+            this.keyword=this.$route.params.q==undefined?this.$route.query.q:this.$route.params.q;
             this.$api.service.userInfo().then((response)=>{
                 if(response.data.status==1){
                     this.showRegisterLogin=false;
@@ -94,25 +95,84 @@
                 }else{
                     this.showRegisterLogin=true;
                 }
-                this.$api.service.subscribe_box(
+                return Promise.reject(response);
+            }).then(function () {
+                if(this.keyword==''){
+                    this.$router.push("/") // 跳转到首页
+                }
+                this.$api.service.tool_box(
+                    this.keyword,
                     this.cur_page,
                     10,
                 ).then((response)=>{
                     if(response.data.status==1){
                         this.arrays=response.data.data;
+                        if(response.data.data.length==0){
+                            this.$message({
+                                message: '抱歉未搜到相关工具！您可以填写提交相关网站想要开发的工具，我们会尽快回复您是否可行',
+                                type: 'warning'
+                            });
+                        }
                     }
-                }).catch((error)=>{
-                    this.$message({
-                        message: error,
-                        type: 'warning'
-                    });
+                }).catch(()=>{
+                    this.$api.service.tool_box_free(
+                        this.keyword,
+                        this.cur_page,
+                        10,
+                    ).then((response)=>{
+                        if(response.data.status==1){
+                            this.arrays=response.data.data;
+                            if(response.data.data.length==0){
+                                this.$message({
+                                    message: '抱歉未搜到相关工具！您可以填写提交相关网站想要开发的工具，我们会尽快回复您是否可行',
+                                    type: 'warning'
+                                });
+                            }
+                        }
+                    }).catch((error)=>{
+                        this.$message({
+                            message: error,
+                            type: 'warning'
+                        });
+                    })
                 })
-            }).catch((error)=>{
-                this.showRegisterLogin=true;
-                this.$message({
-                    message: error,
-                    type: 'warning'
-                });
+            }).catch(()=>{
+
+                if(this.keyword==''){
+                    this.$router.push("/") // 跳转到首页
+                }
+                this.$api.service.tool_box(
+                    this.keyword,
+                    this.cur_page,
+                    10,
+                ).then((response)=>{
+                    if(response.data.status==1){
+                        this.arrays=response.data.data;
+                        if(response.data.data.length==0){
+                            this.$message({
+                                message: '抱歉未搜到相关工具！您可以填写提交相关网站想要开发的工具，我们会尽快回复您是否可行',
+                                type: 'warning',
+                                duration:5000
+                            });
+                        }
+                    }
+                }).catch(()=>{
+                    this.$api.service.tool_box_free(
+                        this.keyword,
+                        this.cur_page,
+                        10,
+                    ).then((response)=>{
+                        if(response.data.status==1){
+                            this.arrays=response.data.data;
+                        }
+                    }).catch((error)=>{
+                        this.showRegisterLogin=true;
+                        this.$message({
+                            message: error,
+                            type: 'warning'
+                        });
+                    })
+                })
             })
         },
         methods: {
@@ -124,15 +184,42 @@
                 this.search ()
             },
             search () {
-                if(this.keyword!=''){
-                    let search = this.$router.resolve({
-                        name: 'search',
-                        query:{
-                            q:this.keyword,
-                        }
-                    }) // 跳转到搜索页面
-                    window.open(search.href, '_blank');
+                if(this.keyword==''){
+                    this.$router.push("/") // 跳转到首页
                 }
+                this.$api.service.tool_box(
+                    this.keyword,
+                    this.cur_page,
+                    10,
+                ).then((response)=>{
+                    if(response.data.status==1){
+                        this.total=response.data.total;
+                        this.arrays=response.data.data;
+                        if(response.data.data.length==0){
+                            this.$message({
+                                message: '抱歉未搜到相关工具！您可以填写提交相关网站想要开发的工具，我们会尽快回复您是否可行',
+                                type: 'warning',
+                                duration:8000
+                            });
+                        }
+                    }
+                }).catch(()=>{
+                    this.$api.service.tool_box_free(
+                        this.keyword,
+                        this.cur_page,
+                        10,
+                    ).then((response)=>{
+                        if(response.data.status==1){
+                            this.total=response.data.total;
+                            this.arrays=response.data.data;
+                        }
+                    }).catch((error)=>{
+                        this.$message({
+                            message: error,
+                            type: 'warning'
+                        });
+                    })
+                })
             },
             index() {
                 this.$router.push("/") // 跳转到首页

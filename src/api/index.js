@@ -1,7 +1,7 @@
 import api_all from './api'
-import abc from './service'
+import service from './service'
 
 export default {
     api_all,
-    abc
+    service
 }
