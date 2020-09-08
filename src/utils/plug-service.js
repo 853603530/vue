@@ -23,14 +23,6 @@ const mainFunction = {
       action: 'updataInterceptUrl',
     });
   },
-  setStorage: function () {
-    this.sendBackgroundService({
-      a: 1,
-      b: 2,
-      key: 'test',
-      action: 'setSessionStorage',
-    });
-  },
   postJSON:function (url, data) {
     return new Promise( (resolve, reject) => {
       let xhr = new XMLHttpRequest()
@@ -47,11 +39,14 @@ const mainFunction = {
       xhr.send(data);
     })
   },
-  getStorage: function () {
-    this.sendBackgroundService({
-      key: 'test',
-      action: 'getSessionStorage',
-    });
+  setStorage: function (data) {
+    this.sendBackgroundService(data);
+  },
+  getStorage: function (data) {
+    this.sendBackgroundService(data);
+  },
+  removeStorage: function (data) {
+    this.sendBackgroundService(data);
   }
 }
 

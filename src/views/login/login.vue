@@ -75,6 +75,7 @@
                     ).then((response)=>{
                         if(response.data.status==1){
                             localStorage.setItem('Authorization', response.data.data.token_type+' '+response.data.data.access_token); // 设置TOKEN
+                            this.setStorage({'Authorization':response.data.data.token_type+' '+response.data.data.access_token,action:'setLocalStorage',key:'Authorization'})
                             this.$router.push("/home") // 跳转到首页
                         }else if(response.data.status==0){
                             this.$message({
@@ -93,11 +94,11 @@
             index() {
                 this.$router.push("/") // 跳转到首页
             },
-            setStorage() {
-                mainFunction.setStorage();
+            setStorage(data) {
+                mainFunction.setStorage(data);
             },
-            getStorage() {
-                mainFunction.getStorage();
+            getStorage(data) {
+                mainFunction.getStorage(data);
             }
 
         }

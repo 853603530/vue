@@ -6,11 +6,12 @@
                     <template slot="prepend" ><a @click="index" style="cursor:pointer">AISANSI</a></template>
                     <el-button slot="append" icon="el-icon-search" @click="search"></el-button>
                 </el-input>
+                <el-button type="primary" icon="el-icon-plus" style="margin-left: 100px;" v-if="this.userlevel===1?false:true">创建工具</el-button>
                 <el-button-group style="margin-left: 100px;" v-if="showRegisterLogin">
                     <el-button @click="register">注册</el-button>
                     <el-button @click="login">登录</el-button>
                 </el-button-group>
-                <el-button-group style="margin-left: 200px;" v-else>
+                <el-button-group style="margin-left: 100px;margin-top: 10px" v-else>
                     <el-avatar :size="50" style="background-color: #9fd8d8"><a @mouseenter="enter" @mouseleave="leave" >{{userlevel===1?'user':'开发者'}}</a></el-avatar>
                     <transition name="fade">
                         <div class="tl" v-show="showUserInfo" @mouseenter="enter" @mouseleave="leave" transiton="fade">
@@ -79,7 +80,7 @@
                                 </div>
                                 <div style="margin-top: 20px;margin-left: 150px;float: left">
                                     <a>订阅：</a>
-                                    <el-switch
+                                    <el-switch @change="subscribe(obj.id,$event)"
                                             v-model="obj.subscribe"
                                             :active-value="1" :inactive-value="0"
                                             active-color="#13ce66"
@@ -88,7 +89,7 @@
                                 </div>
                                 <div style="margin-top: 60px;margin-left: 150px;float: left" v-if="obj.subscribe===1">
                                     <a>启用：</a>
-                                    <el-switch
+                                    <el-switch @change="use_box(obj.id,$event)"
                                             v-model="obj.status"
                                             :active-value="1" :inactive-value="0"
                                             active-color="#13ce66"
@@ -173,6 +174,64 @@
             })
         },
         methods: {
+            use_box(box_id,subscribe_id){
+                if(subscribe_id==1){
+                    this.$api.service.box_enable(box_id,subscribe_id).then((response)=>{
+                        this.$message({
+                            message: response.data.msg,
+                            type: 'success'
+                        });
+                    }).catch((error)=>{
+                        this.$message({
+                            message: 'error' in error ?'登录后启用':error,
+                            type: 'error'
+                        });
+                    })
+                }
+                if(subscribe_id==0){
+                    this.$api.service.box_disabled(box_id,subscribe_id).then((response)=>{
+                        this.$message({
+                            message: response.data.msg,
+                            type: 'success'
+                        });
+                    }).catch((error)=>{
+                        this.$message({
+                            message: 'error' in error ?'登录后启用':error,
+                            type: 'error'
+                        });
+                    })
+                }
+
+            },
+            subscribe(box_id,subscribe_id){
+                if(subscribe_id==1){
+                    this.$api.service.subscribe_add(box_id,subscribe_id).then((response)=>{
+                        this.$message({
+                            message: response.data.msg,
+                            type: 'success'
+                        });
+                    }).catch((error)=>{
+                        this.$message({
+                            message: 'error' in error ?'登录后订阅':error,
+                            type: 'error'
+                        });
+                    })
+                }
+                if(subscribe_id==0){
+                    this.$api.service.subscribe_del(box_id,subscribe_id).then((response)=>{
+                        this.$message({
+                            message: response.data.msg,
+                            type: 'success'
+                        });
+                    }).catch((error)=>{
+                        this.$message({
+                            message: 'error' in error ?'登录后订阅':error,
+                            type: 'error'
+                        });
+                    })
+                }
+
+            },
             handleCurrentChange(val){
                 this.cur_page=val;
                 this.search ()
@@ -203,6 +262,7 @@
             logout () {
                 localStorage.removeItem('Authorization');
                 localStorage.removeItem('userInfo');
+                this.removeStorage({action:'removeLocalStorage',key:'Authorization'})
                 this.showRegisterLogin=true;
                 this.$message({
                     message: '退出成功！',
@@ -218,11 +278,14 @@
             login () {
                 this.$router.push("/login") // 跳转到登录
             },
-            setStorage() {
-                mainFunction.setStorage();
+            removeStorage(data) {
+                mainFunction.removeStorage(data);
             },
-            getStorage() {
-                mainFunction.getStorage();
+            setStorage(data) {
+                mainFunction.setStorage(data);
+            },
+            getStorage(data) {
+                mainFunction.getStorage(data);
             }
 
         }
@@ -262,7 +325,6 @@
         opacity: 0;
     }
     .js-box{
-        height: 150px;
         margin-bottom: 200px;
         border-bottom: 2px solid #DCDFE6;
         border-bottom-color-color: white;

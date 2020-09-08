@@ -24,6 +24,46 @@ const api_all = {
             }
         })
     },
+    subscribe_add(box_id,subscribe_id) {
+        return axios({
+            url: '/api/data/subscribe/add',
+            method: 'POST',
+            data: {
+                box_id: box_id,
+                subscribe_id: subscribe_id
+            }
+        })
+    },
+    subscribe_del(box_id,subscribe_id) {
+        return axios({
+            url: '/api/data/subscribe/del',
+            method: 'POST',
+            data: {
+                box_id: box_id,
+                subscribe_id: subscribe_id
+            }
+        })
+    },
+    box_enable(box_id,subscribe_id) {
+        return axios({
+            url: '/api/data/box/enable',
+            method: 'POST',
+            data: {
+                box_id: box_id,
+                subscribe_id: subscribe_id
+            }
+        })
+    },
+    box_disabled(box_id,subscribe_id) {
+        return axios({
+            url: '/api/data/box/disabled',
+            method: 'POST',
+            data: {
+                box_id: box_id,
+                subscribe_id: subscribe_id
+            }
+        })
+    },
     userInfo() {
         return axios({
             url: '/api/user/userInfo',
@@ -73,6 +113,16 @@ const api_all = {
             }
         })
     },
+    developer_box_auth(pageindex,pagesize) {
+        return axios({
+            url: '/api/data/developer/box',
+            method: 'POST',
+            data: {
+                pageindex:pageindex,
+                pagesize:pagesize
+            }
+        })
+    },
     subscribe_box(pageindex,pagesize) {
         return axios({
             url: '/api/data/subscribe/box',
@@ -80,6 +130,44 @@ const api_all = {
             data: {
                 pageindex:pageindex,
                 pagesize:pagesize
+            }
+        })
+    },
+    create_tool() {
+        return axios({
+            url: '/api/data/create/tool',
+            method: 'POST'
+        })
+    },
+    update_tool(id,title,url,js,css,desc) {
+        return axios({
+            url: '/api/data/update/tool',
+            method: 'POST',
+            data: {
+                id:id,
+                title:title,
+                url:url,
+                js:JSON.stringify(js),
+                css:JSON.stringify(css),
+                desc:desc,
+            }
+        })
+    },
+    edit_tool(id) {
+        return axios({
+            url: '/api/data/edit/tool',
+            method: 'POST',
+            data: {
+                id:id,
+            }
+        })
+    },
+    audit_tool(id) {
+        return axios({
+            url: '/api/data/audit/tool',
+            method: 'POST',
+            data: {
+                id:id,
             }
         })
     },
