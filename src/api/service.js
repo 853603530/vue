@@ -13,7 +13,7 @@ const api_all = {
         })
     },
     // 注册
-    register(username,password,email) {
+    register(username,password,email,code,userType) {
         return axios({
             url: '/api/wx/register/',
             method: 'POST',
@@ -21,6 +21,8 @@ const api_all = {
                 username: username,
                 password: password,
                 email: email,
+                code:code,
+                userType:userType
             }
         })
     },
@@ -168,6 +170,24 @@ const api_all = {
             method: 'POST',
             data: {
                 id:id,
+            }
+        })
+    },
+    check_email(email) {
+        return axios({
+            url: '/api/free/check/email',
+            method: 'POST',
+            data: {
+                email:email,
+            }
+        })
+    },
+    check_code(email) {
+        return axios({
+            url: '/api/free/email/code',
+            method: 'POST',
+            data: {
+                email:email,
             }
         })
     },
